@@ -8,7 +8,7 @@ class CheckOut
   attr_reader :total
 
   def initialize(rules)
-    @rules = promo_standardize rules
+    @rules = rules
     @items = {}
     @total = 0
   end
@@ -46,12 +46,6 @@ class CheckOut
   # find item in the list by id
   def find_item(id)
     @items.select{|item_id, quantity| item_id == id}
-  end
-
-  # remove conflicting promos
-  def promo_standardize(rules)
-    #TODO
-    rules
   end
 
   def item_discount_calculate(promo)

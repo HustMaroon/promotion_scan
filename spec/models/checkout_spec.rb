@@ -10,6 +10,7 @@ describe CheckOut do
     @item3 = build(:item, :item3)
     @promo1 = build(:promotion, :promo1)
     @promo2 = build(:promotion, :promo2)
+    @promo3 = build(:promotion, :promo3)
   end
   context 'no promotion' do
     it 'calculate properly' do
@@ -111,6 +112,22 @@ describe CheckOut do
       @co.scan(@item2)
       @co.scan(@item1)
       @co.scan(@item3)
+      expect(@co.total).to eq expected_total
+    end
+  end
+
+  context 'apply promo1, promo2, promo3' do
+    before(:each) do
+      @co = CheckOut.new([@promo1, @promo2, @promo3])
+    end
+
+    it 'promo3 override promo2' do
+      expected_total = (BigDecimal('9.25') - BigDecimal('0.75')) * 2 + 45 * 2 + BigDecimal('19.95') - 40
+      @co.scan(@item1)
+      @co.scan(@item2)
+      @co.scan(@item1)
+      @co.scan(@item3)
+      @co.scan(@item2)
       expect(@co.total).to eq expected_total
     end
   end
