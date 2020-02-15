@@ -55,6 +55,10 @@ Total price expected: £73.76
 - items: list of current items and quantity of each items
 - rules: list of current applied promotions
 
+### Strategy
+- First apply all applicable on_item promotion (assume that there is only 1 on_item promotion for 1 item added to checkout at the same time )
+- Calculate total after on_item promotions and apply on_total promotions
+
 
 ## How to setup
 Just run `bundle install` and `rspec` at the top of directory
