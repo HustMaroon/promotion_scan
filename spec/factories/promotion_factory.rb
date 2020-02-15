@@ -7,7 +7,7 @@ FactoryBot.define do
     trait :promo1 do
       type {Constants::PromotionType::ON_ITEM}
       threshold {2}
-      item_id {build(:item, :item1)}
+      item_id {build(:item, :item1).id}
       value {0.75}
       percentage {false}
       initialize_with{Promotion.new(type, threshold, value, percentage, item_id)}

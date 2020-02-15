@@ -2,6 +2,7 @@ require_relative '../../spec/spec_helper'
 require_relative '../../models/checkout'
 require_relative '../../spec/factories/item_factory'
 require_relative '../../spec/factories/promotion_factory'
+require 'bigdecimal'
 describe CheckOut do
   before(:all) do
     @item1 = build(:item, :item1)
@@ -14,11 +15,11 @@ describe CheckOut do
     it 'calculate properly' do
       co = CheckOut.new([])
       co.scan(@item1)
-      expect(co.total).to eq @item1.price
+      expect(co.total).to eq BigDecimal('9.25')
       co.scan(@item2)
-      expect(co.total).to eq(@item1.price + @item2.price)
+      expect(co.total).to eq(BigDecimal('9.25') + BigDecimal('45'))
       co.scan(@item3)
-      expect(co.total).to eq(@item1.price + @item2.price + @item3.price)
+      expect(co.total).to eq(BigDecimal('9.25') + BigDecimal('45') + BigDecimal('19.95'))
     end
   end
 
@@ -28,25 +29,25 @@ describe CheckOut do
     end
     it 'no legal item' do
       @co.scan(@item2)
-      expect(@co.total).to eq(@item2.price)
+      expect(@co.total).to eq(BigDecimal('45'))
       @co.scan(@item3)
-      expect(@co.total).to eq(@item2.price + @item3.price)
+      expect(@co.total).to eq(BigDecimal('45') + BigDecimal('19.95'))
     end
 
     it '1 legal item but not exceed the threshold' do
       @co.scan(@item1)
-      expect(@co.total).to eq @item1.price
+      expect(@co.total).to eq BigDecimal('9.25')
     end
 
     it 'satisfy the promo' do
-      expected_total = 2 * (9.25 - 0.75)
+      expected_total = 2 * (BigDecimal('9.25') - BigDecimal('0.75'))
       @co.scan(@item1)
       @co.scan(@item1)
       expect(@co.total).to eq expected_total
     end
 
     it 'mix with other items' do
-      expected_total = 45 + 19.95 + 2 * (9.25 - 0.75)
+      expected_total = 45 + BigDecimal('19.95') + 2 * (BigDecimal('9.25') - BigDecimal('0.75'))
       @co.scan(@item2)
       @co.scan(@item1)
       @co.scan(@item3)
@@ -61,14 +62,14 @@ describe CheckOut do
     end
 
     it 'not satisfied' do
-      expected_total = 9.25 + 45
+      expected_total = BigDecimal('9.25') + 45
       @co.scan(@item1)
       @co.scan(@item2)
       expect(@co.total).to eq expected_total
     end
 
     it 'satisfied' do
-      expected_total = (9.25 + 45 + 19.95) * 0.9
+      expected_total = (BigDecimal('9.25') + 45 + BigDecimal('19.95')) * BigDecimal('0.9')
       @co.scan(@item1)
       @co.scan(@item2)
       @co.scan(@item3)
@@ -82,14 +83,14 @@ describe CheckOut do
     end
 
     it 'not satisfied' do
-      expected_total = 9.25 + 45
+      expected_total = BigDecimal('9.25') + 45
       @co.scan(@item1)
       @co.scan(@item2)
       expect(@co.total).to eq expected_total
     end
 
     it 'promo1 satisfied' do
-      expected_total = 2 * (9.25 - 0.75) + 19.95
+      expected_total = 2 * (BigDecimal('9.25') - BigDecimal('0.75')) + BigDecimal('19.95')
       @co.scan(@item1)
       @co.scan(@item3)
       @co.scan(@item1)
@@ -97,7 +98,7 @@ describe CheckOut do
     end
 
     it 'promo2 satisfied' do
-      expected_total = (9.25 + 19.95 + 45) * 0.9
+      expected_total = (BigDecimal('9.25') + BigDecimal('19.95') + 45) * BigDecimal('0.9')
       @co.scan(@item1)
       @co.scan(@item2)
       @co.scan(@item3)
@@ -105,7 +106,7 @@ describe CheckOut do
     end
 
     it 'both satisfied' do
-      expected_total = ((9.25 - 0.75) * 2 + 45 + 19.95) * 0.9
+      expected_total = ((BigDecimal('9.25') - BigDecimal('0.75')) * 2 + 45 + BigDecimal('19.95')) * BigDecimal('0.9')
       @co.scan(@item1)
       @co.scan(@item2)
       @co.scan(@item1)
