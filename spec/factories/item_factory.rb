@@ -1,24 +1,17 @@
 require './models/item'
 require 'bigdecimal'
 FactoryBot.define do
+  file = File.open('./spec/fixtures/items.json', 'r')
+  content = file.read
+  items = JSON.parse(content, object_class: OpenStruct)
   factory :item do
-    trait :item1 do
-      id {1}
-      code {'001'}
-      name {'Lavender heart'}
-      price {BigDecimal('9.25')}
-    end
-    trait :item2 do
-      id {2}
-      code {'002'}
-      name {'Personalised cufflinks'}
-      price {BigDecimal('45')}
-    end
-    trait :item3 do
-      id {3}
-      code {'003'}
-      name {'Kids T-shirt'}
-      price {BigDecimal('19.95')}
+    items.each_with_index do |item, index|
+      trait "item#{index + 1}".to_sym do
+        id {item.id}
+        code {item.code}
+        name {item.name}
+        price {item.price}
+      end
     end
   end
 end

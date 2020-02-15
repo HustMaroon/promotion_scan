@@ -1,6 +1,5 @@
 require_relative '../../models/promotion'
 require_relative '../../helpers/constants'
-#require_relative 'item_factory'
 require_relative '../../spec/spec_helper'
 FactoryBot.define do
   factory :promotion do
